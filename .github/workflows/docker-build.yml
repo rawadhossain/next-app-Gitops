@@ -33,8 +33,8 @@ jobs:
               env:
                   PAT: ${{ secrets.PAT }}
               run: |
-                  git clone https://github.com/100xdevs-cohort-3/argo-deployment.git
-                  cd argo-deployment
+                  git clone https://github.com/rawadhossain/argocd-gitops-deployment.git
+                  cd argocd-gitops-deployment
 
                   sed -i 's|image: rawadhossain/todo-app:.*|image: rawadhossain/todo-app:${{ github.sha }}|' manifest.yml
 
