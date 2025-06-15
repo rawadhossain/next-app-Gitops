@@ -39,8 +39,12 @@ jobs:
                   sed -i 's|image: 100xdevs/todo-app-week-39:.*|image: rawadhossain/todo-app:${{ github.sha }}|' manifest.yml
 
                   git status --porcelain
-                  git config user.name "GitHub Actions Bot"
-                  git config user.email "actions@github.com"
-                  git add .
-                  git commit -m "Update school server image tags to ${{ github.sha }}"
-                  git push https://${PAT}@github.com/rawadhossain/argocd-gitops-deployment.git main
+                  if [[ $(git status --porcelain) ]]; then
+                    git config user.name "GitHub Actions Bot"
+                    git config user.email "actions@github.com"
+                    git add .
+                    git commit -m "Update school server image tags to ${{ github.sha }}"
+                    git push https://${PAT}@github.com/rawadhossain/argocd-gitops-deployment.git main
+                  else
+                    echo "No changes to commit."
+                  fi
