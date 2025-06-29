@@ -28,7 +28,7 @@ jobs:
                   PAT: ${{ secrets.PAT }}
               run: |
                   git clone https://github.com/rawadhossain/argocd-gitops-deployment.git
-                  cd argo-deployment
+                  # cd argo-deployment
                   
                   # Configure git user
                   git config user.name "GitHub Actions Bot"
