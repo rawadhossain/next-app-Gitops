@@ -28,28 +28,26 @@ jobs:
                   PAT: ${{ secrets.PAT }}
               run: |
                   git clone https://github.com/rawadhossain/argocd-gitops-deployment.git
-                  # cd argo-deployment
+                  cd argocd-gitops-deployment
                   
-                  # Configure git user
+                  # Configure git user and pull strategy INSIDE the cloned repo
                   git config user.name "GitHub Actions Bot"
                   git config user.email "actions@github.com"
+                  git config pull.rebase true
                   
-                  # Set up the remote URL with PAT for pushing
-                  git remote set-url origin https://${PAT}@github.com/rawadhossain/argocd-gitops-deployment.git
-                  
-                  # Pull latest changes to avoid conflicts
-                  git pull origin main
+                  # Fetch and reset to handle divergent branches
+                  git fetch origin main
+                  git reset --hard origin/main
                   
                   # Update the image tag
                   sed -i 's|image: 100xdevs/todo-app-week-39:.*|image: rawadhossain/todo-app:${{ github.sha }}|' manifest.yml
                   
                   # Check if there are changes to commit
-                  git status --porcelain
                   if [[ $(git status --porcelain) ]]; then
                     git add .
                     git commit -m "Update school server image tags to ${{ github.sha }}"
                     
-                    # Retry push with pull in case of conflicts
+                    # Retry push with fetch and reset in case of conflicts
                     max_retries=3
                     retry_count=0
                     
@@ -58,8 +56,18 @@ jobs:
                         echo "Successfully pushed changes"
                         break
                       else
-                        echo "Push failed, attempting to pull and retry... (attempt $((retry_count + 1)))"
-                        git pull origin main --rebase
+                        echo "Push failed, fetching latest and retrying... (attempt $((retry_count + 1)))"
+                        git fetch origin main
+                        git reset --hard origin/main
+                        
+                        # Re-apply the image tag update
+                        sed -i 's|image: 100xdevs/todo-app-week-39:.*|image: rawadhossain/todo-app:${{ github.sha }}|' manifest.yml
+                        
+                        if [[ $(git status --porcelain) ]]; then
+                          git add .
+                          git commit -m "Update school server image tags to ${{ github.sha }}"
+                        fi
+                        
                         retry_count=$((retry_count + 1))
                         
                         if [ $retry_count -eq $max_retries ]; then
