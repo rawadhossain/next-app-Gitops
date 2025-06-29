@@ -27,8 +27,8 @@ jobs:
               env:
                   PAT: ${{ secrets.PAT }}
               run: |
-                  git clone https://${PAT}@github.com/rawadhossain/argocd-gitops-deployment.git
-                  cd argocd-gitops-deployment
+                  git clone https://github.com/100xdevs-cohort-3/argo-deployment.git
+                  cd argo-deployment
                   
                   # Configure git user and pull strategy INSIDE the cloned repo
                   git config user.name "GitHub Actions Bot"
