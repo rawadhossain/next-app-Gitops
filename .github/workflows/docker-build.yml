@@ -27,13 +27,16 @@ jobs:
               env:
                   PAT: ${{ secrets.PAT }}
               run: |
-                  git clone https://github.com/rawadhossain/argocd-gitops-deployment.git
+                  git clone https://${PAT}@github.com/rawadhossain/argocd-gitops-deployment.git
                   cd argocd-gitops-deployment
                   
                   # Configure git user and pull strategy INSIDE the cloned repo
                   git config user.name "GitHub Actions Bot"
                   git config user.email "actions@github.com"
                   git config pull.rebase true
+                  
+                  # Set up the remote URL with PAT for authentication
+                  git remote set-url origin https://${PAT}@github.com/rawadhossain/argocd-gitops-deployment.git
                   
                   # Fetch and reset to handle divergent branches
                   git fetch origin main
